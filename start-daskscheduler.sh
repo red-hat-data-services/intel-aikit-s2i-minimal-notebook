@@ -4,4 +4,6 @@ set -x
 
 set -eo pipefail
 
-exec /opt/app-root/bin/start.sh dask-scheduler $DASK_SCHEDULER_ARGS "$@"
+APP_ROOT=/opt/app-root
+
+exec ${APP_ROOT}/bin/start.sh dask-scheduler $DASK_SCHEDULER_ARGS "$@"

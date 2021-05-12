@@ -4,6 +4,8 @@ set -eo pipefail
 
 set -x
 
+APP_ROOT=/opt/app-root
+
 # Generate htdigest password file for webdav access if it doesn't exist.
 
 JUPYTER_ENABLE_WEBDAV=${JUPYTER_ENABLE_WEBDAV:-false}
@@ -18,7 +20,7 @@ else
     WEBDAV_REALM=jupyter-on-openshift/jupyter-notebooks
 fi
 
-WEBDAV_USERFILE=/opt/app-root/etc/webdav.htdigest
+WEBDAV_USERFILE=${APP_ROOT}/etc/webdav.htdigest
 
 export WEBDAV_REALM
 export WEBDAV_USERFILE
@@ -64,8 +66,8 @@ if [[ ! -z "${JUPYTER_ENABLE_SUPERVISORD}" ]]; then
     # Startup supervisord against the configuration and keep it in the
     # foreground so becomes process ID 1 for the container.
 
-    exec /opt/app-root/bin/supervisord --nodaemon \
-        --configuration /opt/app-root/etc/supervisord.conf
+    exec ${APP_ROOT}/bin/supervisord --nodaemon \
+        --configuration ${APP_ROOT}/etc/supervisord.conf
 else
-    . /opt/app-root/bin/start-notebook.sh "$@"
+    . ${APP_ROOT}/bin/start-notebook.sh "$@"
 fi

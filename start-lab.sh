@@ -4,7 +4,9 @@ set -x
 
 set -eo pipefail
 
+APP_ROOT=/opt/app-root
+
 JUPYTER_ENABLE_LAB=true
 export JUPYTER_ENABLE_LAB
 
-exec /opt/app-root/bin/start-notebook.sh "$@"
+exec ${APP_ROOT}/bin/start-notebook.sh "$@"

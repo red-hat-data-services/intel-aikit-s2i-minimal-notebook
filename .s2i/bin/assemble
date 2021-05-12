@@ -5,7 +5,7 @@ set -x
 set -eo pipefail
 
 APP_ROOT=${APP_ROOT:-/opt/app-root/src}
-
+CONDA_ROOT=${CONDA_ROOT:-/opt/anaconda3}
 
 # Run the original Python S2I assemble script to install packages.
 
@@ -19,15 +19,25 @@ rm -rf /tmp/requirements.txt
 # INFO: Install everything that's required for Jupyter notebooks here.
 ########################################################################
 
+# Ensure we are using the latest pip and wheel packages.
+
+${CONDA_ROOT}/bin/conda install --prefix ${APP_ROOT} pip setuptools wheel
+
 # Install pipenv for jupyter-nbrequirements to use
 # TODO: This should be removed once nbrequirements can use Thoth + micropipenv only
-pip install pipenv==2020.11.15
+${CONDA_ROOT}/bin/conda install --prefix ${APP_ROOT} pipenv==2020.11.15
 
 # Install mod_wsgi for use in optional webdav support.
 
-pip install 'mod_wsgi==4.6.8'
+${CONDA_ROOT}/bin/conda install --prefix ${APP_ROOT} -c conda-forge 'mod_wsgi>=4.6.8'
+
+# Install supervisord for managing multiple applications.
+
+${CONDA_ROOT}/bin/conda install --prefix ${APP_ROOT} 'supervisor>=4.1.0'
 
 # Install base packages needed for running Jupyter Notebooks.
+
+${CONDA_ROOT}/bin/conda install --prefix ${APP_ROOT} --file /tmp/src/requirements.txt
 
 npm cache clean --force
 
@@ -36,9 +46,9 @@ rm -rf $HOME/.node-gyp
 
 # Copy into place default config files for Jupyter and Apache webdav.
 
-cp ${APP_ROOT}/src/jupyter_notebook_config.py /opt/app-root/etc/
-cp ${APP_ROOT}/src/jupyter_kernel_gateway_config.py /opt/app-root/etc/
-cp ${APP_ROOT}/src/httpd-webdav.conf /opt/app-root/etc/
+cp ${APP_ROOT}/src/jupyter_notebook_config.py ${APP_ROOT}/etc/
+cp ${APP_ROOT}/src/jupyter_kernel_gateway_config.py ${APP_ROOT}/etc/
+cp ${APP_ROOT}/src/httpd-webdav.conf ${APP_ROOT}/etc/
 
 # This S2I assemble script is only used when creating the custom image.
 # For when running the image, or using it as a S2I builder, we use a second
@@ -50,53 +60,56 @@ mkdir -p ${APP_ROOT}/.s2i
 
 mv ${APP_ROOT}/src/builder/image_metadata.json ${APP_ROOT}/.s2i/image_metadata.json
 
-mv ${APP_ROOT}/src/builder /opt/app-root/builder
+mv ${APP_ROOT}/src/builder ${APP_ROOT}/builder
 
-mv ${APP_ROOT}/src/supervisor /opt/app-root/etc/supervisor
+mv ${APP_ROOT}/src/supervisor ${APP_ROOT}/etc/supervisor
 
-mv ${APP_ROOT}/src/gateway /opt/app-root/gateway
+mv ${APP_ROOT}/src/gateway ${APP_ROOT}/gateway
 
-mv ${APP_ROOT}/src/*.sh /opt/app-root/bin
+mv ${APP_ROOT}/src/*.sh ${APP_ROOT}/bin
 
 # Install oc command line client for OpenShift cluster.
 
-curl -s -o ${APP_ROOT}/oc.tar.gz https://mirror.openshift.com/pub/openshift-v3/clients/3.11.153/linux/oc.tar.gz && \
-    tar -C /opt/app-root/bin -zxf ${APP_ROOT}/oc.tar.gz oc && \
-    mv /opt/app-root/bin/oc /opt/app-root/bin/oc-3.11 && \
+curl -s -o ${APP_ROOT}/oc.tar.gz https://mirror.openshift.com/pub/openshift-v3/clients/3.11.374/linux/oc.tar.gz && \
+    tar -C ${APP_ROOT}/bin -zxf ${APP_ROOT}/oc.tar.gz oc && \
+    mv ${APP_ROOT}/bin/oc ${APP_ROOT}/bin/oc-3.11 && \
     rm ${APP_ROOT}/oc.tar.gz
 
-curl -s -o ${APP_ROOT}/oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz&& \
-    tar -C /opt/app-root/bin -zxf ${APP_ROOT}/oc.tar.gz oc && \
-    mv /opt/app-root/bin/oc /opt/app-root/bin/oc-4 && \
+curl -s -o ${APP_ROOT}/oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz && \
+    tar -C ${APP_ROOT}/bin -zxf ${APP_ROOT}/oc.tar.gz oc && \
+    mv ${APP_ROOT}/bin/oc ${APP_ROOT}/bin/oc-4 && \
     rm ${APP_ROOT}/oc.tar.gz
 
-ln -s /opt/app-root/bin/oc-wrapper.sh /opt/app-root/bin/oc
+ln -s ${APP_ROOT}/bin/oc-wrapper.sh ${APP_ROOT}/bin/oc
+
+curl -Ls -o /tmp/kustomize.tar.gz https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v3.9.4/kustomize_v3.9.4_linux_amd64.tar.gz && \
+    tar -C ${APP_ROOT}/bin -zxf /tmp/kustomize.tar.gz kustomize && \
+    rm /tmp/kustomize.tar.gz
 
 # Ensure passwd/group file intercept happens for any shell environment.
 
-echo "source /opt/app-root/etc/generate_container_user" >> /opt/app-root/etc/scl_enable
+echo "source ${APP_ROOT}/etc/generate_container_user" >> ${APP_ROOT}/etc/scl_enable
 
 # Install packages required by the proxy process.
-
-(cd /opt/app-root/gateway && npm install --production)
+cd ${APP_ROOT}/gateway
+npm install --production
 
 # Create additional directories.
 
 echo " -----> Creating additional directories."
 
-mkdir -p /opt/app-root/data
+mkdir -p ${APP_ROOT}/data
 
 # Generate default supervisord.conf file.
-
-echo_supervisord_conf | \
+${APP_ROOT}/bin/echo_supervisord_conf | \
     sed -e 's%^logfile=/tmp/supervisord.log%logfile=/dev/fd/1%' \
         -e 's%^logfile_maxbytes=50MB%logfile_maxbytes=0%' > \
-        /opt/app-root/etc/supervisord.conf
+        ${APP_ROOT}/etc/supervisord.conf
 
-cat >> /opt/app-root/etc/supervisord.conf << EOF
+cat >> ${APP_ROOT}/etc/supervisord.conf << EOF
 
 [include]
-files = /opt/app-root/etc/supervisor/*.conf
+files = ${APP_ROOT}/etc/supervisor/*.conf
 EOF
 
 # Install and enable default nbextensions
@@ -108,7 +121,7 @@ jupyter nbextension enable  --sys-prefix publish
 
 # Enable the extensions configurator
 
-pip install -U jupyter_nbextensions_configurator
+${CONDA_ROOT}/bin/conda install -U jupyter_nbextensions_configurator
 
 jupyter nbextensions_configurator enable --sys-prefix
 
@@ -124,11 +137,12 @@ if [ -d "$APP_ROOT/src/.jupyter/" ]; then
         "$APP_ROOT/src/.jupyter/" ${APP_ROOT}/etc/jupyter
 fi
 
+
 # Make sure the S2I source directory is empty as we will use the image
-# produced to run further S2I builds
+# produced to run further S2I builds.
 
 (shopt -s dotglob ; rm -rf ${APP_ROOT}/src/*)
 
 # Fixup permissions on directories and files.
 
-fix-permissions /opt/app-root
+fix-permissions ${APP_ROOT}

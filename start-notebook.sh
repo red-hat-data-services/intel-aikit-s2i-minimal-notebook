@@ -4,13 +4,15 @@ set -x
 
 set -eo pipefail
 
+APP_ROOT=/opt/app-root
+
 if [[ ! -z "${JUPYTER_ENABLE_KERNELGATEWAY}" ]]; then
-    exec /opt/app-root/bin/start-kernelgateway.sh "$@"
+    exec ${APP_ROOT}/bin/start-kernelgateway.sh "$@"
 fi
 
 if [ x"$JUPYTER_MASTER_FILES" != x"" ]; then
     if [ x"$JUPYTER_WORKSPACE_NAME" != x"" ]; then
-        JUPYTER_WORKSPACE_PATH=/opt/app-root/src/$JUPYTER_WORKSPACE_NAME
+        JUPYTER_WORKSPACE_PATH=${APP_ROOT}/src/$JUPYTER_WORKSPACE_NAME
         setup-volume.sh $JUPYTER_MASTER_FILES $JUPYTER_WORKSPACE_PATH
     fi
 fi
@@ -36,9 +38,9 @@ else
 fi
 
 if [[ "$JUPYTER_ENABLE_LAB" =~ ^(true|yes|y|1)$ ]]; then
-    JUPYTER_PROGRAM_ARGS="$JUPYTER_PROGRAM_ARGS --config=/opt/app-root/etc/jupyter_server_config.py"
+    JUPYTER_PROGRAM_ARGS="$JUPYTER_PROGRAM_ARGS --config=${APP_ROOT}/etc/jupyter_server_config.py"
 else
-    JUPYTER_PROGRAM_ARGS="$JUPYTER_PROGRAM_ARGS --config=/opt/app-root/etc/jupyter_notebook_config.py"
+    JUPYTER_PROGRAM_ARGS="$JUPYTER_PROGRAM_ARGS --config=${APP_ROOT}/etc/jupyter_notebook_config.py"
 fi
 
 if [[ "$JUPYTER_PROGRAM_ARGS $@" != *"--ip="* ]]; then
@@ -59,10 +61,10 @@ else
     fi
 fi
 
-. /opt/app-root/bin/setup-environ.sh
+. ${APP_ROOT}/bin/setup-environ.sh
 
-if [ -f /opt/app-root/src/.jupyter/jupyter_notebook_config.sh ]; then
-    . /opt/app-root/src/.jupyter/jupyter_notebook_config.sh
+if [ -f ${APP_ROOT}/src/.jupyter/jupyter_notebook_config.sh ]; then
+    . ${APP_ROOT}/src/.jupyter/jupyter_notebook_config.sh
 fi
 
-exec /opt/app-root/bin/start.sh $JUPYTER_PROGRAM $JUPYTER_PROGRAM_ARGS "$@"
+exec ${APP_ROOT}/bin/start.sh $JUPYTER_PROGRAM $JUPYTER_PROGRAM_ARGS "$@"
