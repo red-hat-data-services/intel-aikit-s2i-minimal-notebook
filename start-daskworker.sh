@@ -6,7 +6,7 @@ set -eo pipefail
 
 export $(cgroup-limits)
 
-APP_ROOT=/opt/app-root
+APP_ROOT=${APP_ROOT:-/opt/app-root}
 
 DASK_SCHEDULER_ADDRESS=${DASK_SCHEDULER_ADDRESS:-127.0.0.1:8786}
 

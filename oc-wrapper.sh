@@ -1,6 +1,6 @@
 #!/bin/bash
 
-APP_ROOT=/opt/app-root
+APP_ROOT=${APP_ROOT:-/opt/app-root}
 
 case $OC_VERSION in
     4.*)

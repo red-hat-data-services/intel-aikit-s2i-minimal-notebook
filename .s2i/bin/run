@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-APP_ROOT=/opt/app-root
+APP_ROOT=${APP_ROOT:-/opt/app-root}
 
 # Execute the run script from the customised builder.
 

@@ -4,7 +4,7 @@ set -x
 
 set -eo pipefail
 
-APP_ROOT=/opt/app-root
+APP_ROOT=${APP_ROOT:-/opt/app-root}
 
 # The 'start-singleuser.sh' script is invoked by JupyterHub installations.
 # Execute the 'run' script instead so everything goes through common

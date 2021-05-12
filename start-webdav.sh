@@ -4,7 +4,7 @@ set -eo pipefail
 
 set -x
 
-APP_ROOT=/opt/app-root
+APP_ROOT=${APP_ROOT:-/opt/app-root}
 
 WEBDAV_PREFIX=${WEBDAV_PREFIX:-${JUPYTERHUB_SERVICE_PREFIX%/}}
 export WEBDAV_PREFIX
