@@ -1,6 +1,10 @@
 # This image provides a Python 3.7 environment you can use to run your Python
 # applications.
-FROM registry.access.redhat.com/ubi8/s2i-base
+
+ARG IMAGE_NAME=registry.access.redhat.com/ubi8/s2i-core
+ARG IMAGE_TAG=latest
+
+FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
 USER root
 
@@ -91,8 +95,5 @@ RUN /tmp/scripts/assemble
 RUN ${CONDA_ROOT}/bin/conda clean -y --all
 
 USER 1001
-
-# Clone Intel Model Zoo
-RUN git clone --single-branch https://github.com/IntelAI/models.git
 
 CMD [ "/opt/app-root/builder/run" ]

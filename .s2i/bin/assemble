@@ -7,9 +7,15 @@ set -eo pipefail
 APP_ROOT=${APP_ROOT:-/opt/app-root/src}
 CONDA_ROOT=${CONDA_ROOT:-/opt/anaconda3}
 
+# TODO: For now we don't need to run this but eventually if that's needed we need to do the follwoing:
+# mkdir -p /usr/libexec/s2i
+# curl https://raw.githubusercontent.com/thoth-station/s2i-thoth/master/assemble > /usr/libexec/s2i/assemble
+# chmod +x /usr/libexec/s2i/assemble
+# pip install thamos
+
 # Run the original Python S2I assemble script to install packages.
 
-/usr/libexec/s2i/assemble
+# /usr/libexec/s2i/assemble
 
 # Remove the cached package dependencies files generated from s2i assemble script.
 rm -rf /tmp/Pipfile.lock
@@ -25,7 +31,7 @@ ${CONDA_ROOT}/bin/conda install --prefix ${APP_ROOT} pip setuptools wheel
 
 # Install pipenv for jupyter-nbrequirements to use
 # TODO: This should be removed once nbrequirements can use Thoth + micropipenv only
-${CONDA_ROOT}/bin/conda install --prefix ${APP_ROOT} pipenv==2020.11.15
+# ${CONDA_ROOT}/bin/conda install --prefix ${APP_ROOT} -c conda-forge pipenv>=2020.11.15
 
 # Install mod_wsgi for use in optional webdav support.
 
@@ -46,9 +52,9 @@ rm -rf $HOME/.node-gyp
 
 # Copy into place default config files for Jupyter and Apache webdav.
 
-cp ${APP_ROOT}/src/jupyter_notebook_config.py ${APP_ROOT}/etc/
-cp ${APP_ROOT}/src/jupyter_kernel_gateway_config.py ${APP_ROOT}/etc/
-cp ${APP_ROOT}/src/httpd-webdav.conf ${APP_ROOT}/etc/
+mv /tmp/src/jupyter_notebook_config.py ${APP_ROOT}/etc/
+mv /tmp/src/jupyter_kernel_gateway_config.py ${APP_ROOT}/etc/
+mv /tmp/src/httpd-webdav.conf ${APP_ROOT}/etc/
 
 # This S2I assemble script is only used when creating the custom image.
 # For when running the image, or using it as a S2I builder, we use a second
@@ -58,15 +64,15 @@ cp ${APP_ROOT}/src/httpd-webdav.conf ${APP_ROOT}/etc/
 
 mkdir -p ${APP_ROOT}/.s2i
 
-mv ${APP_ROOT}/src/builder/image_metadata.json ${APP_ROOT}/.s2i/image_metadata.json
+mv /tmp/src/builder/image_metadata.json ${APP_ROOT}/.s2i/image_metadata.json
 
-mv ${APP_ROOT}/src/builder ${APP_ROOT}/builder
+mv /tmp/src/builder ${APP_ROOT}/builder
 
-mv ${APP_ROOT}/src/supervisor ${APP_ROOT}/etc/supervisor
+mv /tmp/src/supervisor ${APP_ROOT}/etc/supervisor
 
-mv ${APP_ROOT}/src/gateway ${APP_ROOT}/gateway
+mv /tmp/src/gateway ${APP_ROOT}/gateway
 
-mv ${APP_ROOT}/src/*.sh ${APP_ROOT}/bin
+mv /tmp/src/*.sh ${APP_ROOT}/bin
 
 # Install oc command line client for OpenShift cluster.
 
@@ -114,6 +120,8 @@ EOF
 
 # Install and enable default nbextensions
 
+${CONDA_ROOT}/bin/conda install --prefix ${APP_ROOT} -c conda-forge jupyter_contrib_nbextensions
+
 jupyter contrib nbextension install --sys-prefix
 
 jupyter nbextension install --sys-prefix https://raw.githubusercontent.com/vpavlin/jupyter-publish-extension/master/publish.js
@@ -121,7 +129,7 @@ jupyter nbextension enable  --sys-prefix publish
 
 # Enable the extensions configurator
 
-${CONDA_ROOT}/bin/conda install -U jupyter_nbextensions_configurator
+${CONDA_ROOT}/bin/conda install --prefix ${APP_ROOT} -c conda-forge jupyter_nbextensions_configurator
 
 jupyter nbextensions_configurator enable --sys-prefix
 
@@ -129,12 +137,12 @@ jupyter lab build
 
 # Apply custom notebook configuration
 
-if [ -d "$APP_ROOT/src/.jupyter/" ]; then
+if [ -d "${APP_ROOT}/src/.jupyter/" ]; then
     rsync \
-        --link-dest="$APP_ROOT/src/.jupyter/" \
+        --link-dest="${APP_ROOT}/src/.jupyter/" \
         --recursive \
         --verbose \
-        "$APP_ROOT/src/.jupyter/" ${APP_ROOT}/etc/jupyter
+        "${APP_ROOT}/src/.jupyter/" ${APP_ROOT}/etc/jupyter
 fi
 
 

@@ -1,6 +1,10 @@
 # This image provides a Python 3.7 environment you can use to run your Python
 # applications.
-FROM registry.access.redhat.com/ubi8/s2i-base
+
+ARG IMAGE_NAME=registry.access.redhat.com/ubi8/s2i-core
+ARG IMAGE_TAG=latest
+
+FROM ${IMAGE_NAME}:${IMAGE_TAG}
 
 USER root
 
@@ -45,18 +49,21 @@ LABEL summary="$SUMMARY" \
       usage="" \
       maintainer="Probably Anaconda"
 
-RUN INSTALL_PKGS="nss_wrapper \
-        httpd httpd-devel mod_ssl mod_auth_gssapi mod_ldap \
-        mod_session atlas-devel gcc-gfortran libffi-devel libtool-ltdl enchant" && \
-    curl https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh > Anaconda3-2020.11-Linux-x86_64.sh && \
-    chmod +x Anaconda3-2020.11-Linux-x86_64.sh && \
-    ./Anaconda3-2020.11-Linux-x86_64.sh -b -p ${CONDA_ROOT} && \
-    rm ./Anaconda3-2020.11-Linux-x86_64.sh && \
-    yum -y module enable httpd:2.4 && \
+RUN yum -y module enable httpd:2.4 && \
+    INSTALL_PKGS="atlas-devel \
+    enchant \
+    gcc-gfortran \
+    httpd \
+    httpd-devel \
+    libffi-devel \
+    libtool-ltdl \
+    mod_auth_gssapi \
+    mod_ldap \
+    mod_session \
+    mod_ssl \
+    nss_wrapper" && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
-    # Remove redhat-logos-httpd (httpd dependency) to keep image size smaller.
-    rpm -e --nodeps redhat-logos-httpd && \
     yum -y clean all --enablerepo='*'
 
 # TODO(Spryor): What extra files exactly...?
@@ -69,6 +76,12 @@ RUN INSTALL_PKGS="nss_wrapper \
 # - In order to drop the root user, we have to make some directories world
 #   writable as OpenShift default security model is to run the container
 #   under random UID.
+
+RUN curl https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh > Anaconda3-2020.11-Linux-x86_64.sh && \
+    chmod +x Anaconda3-2020.11-Linux-x86_64.sh && \
+    ./Anaconda3-2020.11-Linux-x86_64.sh -b -p ${CONDA_ROOT} && \
+    rm ./Anaconda3-2020.11-Linux-x86_64.sh
+
 RUN \
     ${CONDA_ROOT}/bin/conda create -y --prefix ${APP_ROOT} python=${PYTHON_VERSION} && \
     ${CONDA_ROOT}/bin/conda install -y --prefix ${APP_ROOT} -c intel intel-aikit-pytorch && \
@@ -93,6 +106,8 @@ RUN ${CONDA_ROOT}/bin/conda clean -y --all
 USER 1001
 
 # Clone Intel Model Zoo
-RUN git clone --single-branch https://github.com/IntelAI/models.git
+RUN mkdir ${APP_ROOT}/src/models && \
+    cd ${APP_ROOT}/src/models && \
+    curl -sSL --retry 5 https://github.com/IntelAI/models/tarball/HEAD | tar --strip-components=1 -xzf -
 
 CMD [ "/opt/app-root/builder/run" ]
