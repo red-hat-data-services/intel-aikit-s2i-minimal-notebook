@@ -4,7 +4,7 @@ set -x
 
 set -eo pipefail
 
-PATH=${CONDA_ROOT}/envs/${CONDA_ENV}/bin:${PATH}
+source activate ${CONDA_ROOT}
 
 # TODO: For now we don't need to run this but eventually if that's needed we need to do the follwoing:
 # mkdir -p /usr/libexec/s2i
@@ -26,23 +26,21 @@ rm -rf /tmp/requirements.txt
 
 # Ensure we are using the latest pip and wheel packages.
 
-${CONDA_ROOT}/bin/conda install -y -m -n ${CONDA_ENV} pip setuptools wheel
-
 # Install pipenv for jupyter-nbrequirements to use
 # TODO: This should be removed once nbrequirements can use Thoth + micropipenv only
-# ${CONDA_ROOT}/bin/conda install --prefix ${APP_ROOT} -c conda-forge pipenv>=2020.11.15
+# conda install --prefix ${APP_ROOT} -c conda-forge pipenv>=2020.11.15
 
 # Install mod_wsgi for use in optional webdav support.
 
-${CONDA_ROOT}/bin/conda install -y -m -n ${CONDA_ENV} -c conda-forge 'mod_wsgi>=4.6.8'
+conda install -y -c conda-forge 'mod_wsgi>=4.6.8'
 
 # Install supervisord for managing multiple applications.
 
-${CONDA_ROOT}/bin/conda install -y -m -n ${CONDA_ENV} 'supervisor>=4.1.0'
+conda install -y 'supervisor>=4.1.0'
 
 # Install base packages needed for running Jupyter Notebooks.
 
-${CONDA_ROOT}/bin/conda install -y -m -n ${CONDA_ENV} --file /tmp/src/requirements.txt
+conda install -y --file /tmp/src/requirements.txt
 
 npm cache clean --force
 
@@ -122,7 +120,7 @@ EOF
 
 # Install and enable default nbextensions
 
-${CONDA_ROOT}/bin/conda install -y -m -n ${CONDA_ENV} -c conda-forge jupyter_contrib_nbextensions
+conda install -y -c conda-forge jupyter_contrib_nbextensions
 
 jupyter contrib nbextension install --sys-prefix
 
@@ -131,11 +129,9 @@ jupyter nbextension enable  --sys-prefix publish
 
 # Enable the extensions configurator
 
-${CONDA_ROOT}/bin/conda install -y -m -n ${CONDA_ENV} -c conda-forge jupyter_nbextensions_configurator
+conda install -y -c conda-forge jupyter_nbextensions_configurator
 
 jupyter nbextensions_configurator enable --sys-prefix
-
-# ${CONDA_ROOT}/bin/conda uninstall -y -n ${CONDA_ENV} nodejs
 
 jupyter lab build
 
@@ -149,8 +145,14 @@ if [ -d "${APP_ROOT}/src/.jupyter/" ]; then
         "${APP_ROOT}/src/.jupyter/" ${APP_ROOT}/etc/jupyter
 fi
 
-# reinstall impi_rt
-ln -sf ${CONDA_ROOT}/envs/${CONDA_ENV}/bin/libfabric/fi_* ${CONDA_ROOT}/envs/${CONDA_ENV}/bin/
+# fix 'impi_rt' symlinks
+if [ -d "${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/libfabric" ]; then
+  ln -sf ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/libfabric/fi_* ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/
+elif [ -d "${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/libfabric" ]; then
+  ln -sf ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/libfabric/fi_* ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/
+elif [ -d "${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/libfabric" ]; then
+  ln -sf ${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/libfabric/fi_* ${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/
+fi
 
 # Make sure the S2I source directory is empty as we will use the image
 # produced to run further S2I builds.

@@ -4,8 +4,6 @@ set -x
 
 set -eo pipefail
 
-APP_ROOT=${APP_ROOT:-/opt/app-root}
-
 if [[ ! -z "${JUPYTER_ENABLE_KERNELGATEWAY}" ]]; then
     exec ${APP_ROOT}/bin/start-kernelgateway.sh "$@"
 fi
