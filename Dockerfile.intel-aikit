@@ -129,11 +129,9 @@ RUN /tmp/scripts/assemble
 
 RUN conda config --set auto_activate_base false
 
-ARG \
-    KERNEL_NAME_MODIN="Intel AiKit Modin" \
-    KERNEL_NAME_PT="Intel AiKit PyTorch" \
-    KERNEL_NAME_TF="Intel AiKit TensorFlow"
-
+ARG KERNEL_NAME_MODIN="Intel AiKit Modin"
+ARG KERNEL_NAME_PT="Intel AiKit PyTorch"
+ARG KERNEL_NAME_TF="Intel AiKit TensorFlow"
 RUN \
     ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/python -m ipykernel install --name ${CONDA_ENV_MODIN} --display-name "${KERNEL_NAME_MODIN}" && \
     ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/kernda -o -y /usr/local/share/jupyter/kernels/${CONDA_ENV_MODIN}/kernel.json && \
