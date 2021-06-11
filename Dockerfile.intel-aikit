@@ -44,20 +44,27 @@ ENV KMP_AFFINITY='granularity=fine,verbose,compact,1,0' \
 #     ENV="${CONDA_ROOT}/bin/activate ${CONDA_ENV}" \
 #     PROMPT_COMMAND=". ${CONDA_ROOT}/bin/activate ${CONDA_ENV}"
 
-ENV SUMMARY="" \
-    DESCRIPTION=""
-
-LABEL summary="$SUMMARY" \
-      description="$DESCRIPTION" \
-      io.k8s.description="$DESCRIPTION" \
+### Required OpenShift Labels
+LABEL name="Intel\u00ae AiKit" \
+      maintainer="abolfazl.shahbazi@intel.com" \
+      vendor="Intel Corporation" \
+      version="v2021.2" \
+      release="2021.2" \
+      summary="Intel\u00ae oneAPI Analytics Kit" \
+      description="Intel\u00ae oneAPI Deep Neural Network Library (oneDNN) Analytics Kit optimized container for Intel\u00ae Xeon\u00ae processors." \
       io.k8s.display-name="Anaconda Python 3.7" \
       io.openshift.expose-services="8080:http" \
-      io.openshift.tags="builder,python,python37,python-37,miniconda3" \
+      io.openshift.tags="builder,python,python37,python-37,miniconda3,AiKit" \
       com.redhat.component="python-37-container" \
-      name="ubi8/miniconda3" \
-      version="1" \
-      usage="" \
-      maintainer="Probably Anaconda"
+      usage=""
+
+### add licenses to this directory
+RUN mkdir licenses && \
+    cd licenses && \
+    curl -sSL --retry 5 https://github.com/intel/oneapi-containers/tarball/HEAD | tar --strip-components=1 -xzf - && \
+    rm -rf images
+
+RUN yum -y update-minimal --security --sec-severity=Important --sec-severity=Critical
 
 RUN yum -y module enable httpd:2.4 && \
     INSTALL_PKGS="atlas-devel \
@@ -144,17 +151,6 @@ RUN conda clean -y --all
 
 USER 1001
 
-# Clone Intel Model Zoo and Intel AI-Kit examples
-# RUN mkdir ${APP_ROOT}/src/models && \
-#     cd ${APP_ROOT}/src/models && \
-#     curl -sSL --retry 5 https://github.com/IntelAI/models/tarball/HEAD | tar --strip-components=1 -xzf - && \
-#     mkdir /tmp/intel-aikit-examples && \
-#     cd /tmp/intel-aikit-examples && \
-#     curl -sSL --retry 5 https://github.com/preethivenkatesh/oneAPI-samples/tarball/HEAD | tar --strip-components=1 -xzf - && \
-#     mv AI-and-Analytics/RHODS-e2e ${APP_ROOT}/src/intel-aikit-examples && \
-#     rm -rf /tmp/intel-aikit-examples
-
-ENV JUPYTER_PRELOAD_REPOS='https://github.com/IntelAI/models.git,https://github.com/preethivenkatesh/oneAPI-samples.git' \
-    REPO_BRANCH='master'
+ENV JUPYTER_PRELOAD_REPOS='https://github.com/IntelAI/models.git@master,https://github.com/IntelAI/oneAPI-samples.git@redhat-odh'
 
 CMD [ "/opt/app-root/builder/run" ]
