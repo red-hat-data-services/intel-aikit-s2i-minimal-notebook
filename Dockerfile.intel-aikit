@@ -10,6 +10,9 @@ USER root
 
 EXPOSE 8080
 
+### add licenses to this directory
+COPY licenses /licenses
+
 # TODO(Spryor): ensure these are right, add Anaconda versions
 ENV PYTHON_VERSION=3.7 \
     PATH=$HOME/.local/bin/:$PATH \

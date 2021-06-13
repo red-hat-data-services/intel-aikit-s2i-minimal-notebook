@@ -1,7 +1,7 @@
 # This image provides a Python 3.7 environment you can use to run your Python
 # applications.
 
-ARG IMAGE_NAME=registry.access.redhat.com/ubi8/s2i-core
+ARG IMAGE_NAME=registry.access.redhat.com/ubi8/s2i-base
 ARG IMAGE_TAG=latest
 
 FROM ${IMAGE_NAME}:${IMAGE_TAG}
@@ -9,6 +9,9 @@ FROM ${IMAGE_NAME}:${IMAGE_TAG}
 USER root
 
 EXPOSE 8080
+
+### add licenses to this directory
+COPY licenses /licenses
 
 # TODO(Spryor): ensure these are right, add Anaconda versions
 ENV PYTHON_VERSION=3.7 \
