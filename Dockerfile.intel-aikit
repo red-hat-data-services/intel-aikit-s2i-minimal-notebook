@@ -61,12 +61,6 @@ LABEL name="Intel\u00ae AiKit" \
       com.redhat.component="python-37-container" \
       usage=""
 
-### add licenses to this directory
-RUN mkdir licenses && \
-    cd licenses && \
-    curl -sSL --retry 5 https://github.com/intel/oneapi-containers/tarball/HEAD | tar --strip-components=1 -xzf - && \
-    rm -rf images
-
 RUN yum -y update-minimal --security --sec-severity=Important --sec-severity=Critical
 
 RUN yum -y module enable httpd:2.4 && \
