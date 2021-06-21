@@ -47,9 +47,9 @@ if [ -n "${JUPYTER_PRELOAD_REPOS}" ]; then
         REPO_DIR=$(basename ${repo})
         if [ -d "${REPO_DIR}" ]; then
             pushd ${REPO_DIR}
-            rm -rf tools
-            GIT_SSL_NO_VERIFY=true git pull --ff-only || true
-            # :  # Do nothing if the repo already exists
+            # Do nothing if the repo already exists
+            echo "The ${repo} has already been cloned"
+            :
             popd
         else
             GIT_SSL_NO_VERIFY=true git clone ${repo} ${REPO_DIR} ${REPO_BRANCH}
