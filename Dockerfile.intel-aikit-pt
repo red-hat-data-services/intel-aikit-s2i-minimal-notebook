@@ -133,4 +133,6 @@ USER 1001
 
 ENV JUPYTER_PRELOAD_REPOS='https://github.com/IntelAI/models.git@master,https://github.com/IntelAI/oneAPI-samples.git@redhat-odh'
 
+ENV JUPYTER_NOTEBOOK_INTERFACE=lab
+
 CMD [ "/opt/app-root/builder/run" ]
