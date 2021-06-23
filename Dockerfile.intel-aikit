@@ -23,9 +23,9 @@ ENV PYTHON_VERSION=3.7 \
     PIP_NO_CACHE_DIR=off \
     APP_ROOT=/opt/app-root \
     CONDA_ROOT=${APP_ROOT}/miniconda3 \
-    CONDA_ENV_MODIN=intel-aikit-modin \
-    CONDA_ENV_PT=intel-aikit-pytorch \
-    CONDA_ENV_TF=intel-aikit-tensorflow \
+    CONDA_ENV_MODIN=oneAPI-AIKit-MLPackage \
+    CONDA_ENV_PT=oneAPI-AIKit-DLPackage-with-PyTorch \
+    CONDA_ENV_TF=oneAPI-AIKit-DLPackage-with-TF \
     PATH=${APP_ROOT}/miniconda3/bin:${PATH}
 
 # Intel Optimizations specific Envs
@@ -48,12 +48,12 @@ ENV KMP_AFFINITY='granularity=fine,verbose,compact,1,0' \
 #     PROMPT_COMMAND=". ${CONDA_ROOT}/bin/activate ${CONDA_ENV}"
 
 ### Required OpenShift Labels
-LABEL name="Intel\u00ae AiKit" \
+LABEL name="Intel\u00ae oneAPI Toolkit" \
       maintainer="abolfazl.shahbazi@intel.com" \
       vendor="Intel Corporation" \
       version="v2021.2" \
       release="2021.2" \
-      summary="Intel\u00ae oneAPI Analytics Kit" \
+      summary="This Intel oneAPI Toolkit Container provides a comprehensive set of interoperable AI software tools that help to accelerate end to end data science and Machine learning pipelines on Intel architectures with familiar Python libraries and frameworks." \
       description="Intel\u00ae oneAPI Deep Neural Network Library (oneDNN) Analytics Kit optimized container for Intel\u00ae Xeon\u00ae processors." \
       io.k8s.display-name="Anaconda Python 3.7" \
       io.openshift.expose-services="8080:http" \
@@ -130,9 +130,9 @@ RUN /tmp/scripts/assemble
 
 RUN conda config --set auto_activate_base false
 
-ARG KERNEL_NAME_MODIN="Intel AiKit Modin"
-ARG KERNEL_NAME_PT="Intel AiKit PyTorch"
-ARG KERNEL_NAME_TF="Intel AiKit TensorFlow"
+ARG KERNEL_NAME_MODIN="oneAPI AIKit MLPackage"
+ARG KERNEL_NAME_PT="oneAPI AIKit DLPackage with PyTorch"
+ARG KERNEL_NAME_TF="oneAPI AIKit DLPackage with TF"
 RUN \
     ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/python -m ipykernel install --name ${CONDA_ENV_MODIN} --display-name "${KERNEL_NAME_MODIN}" && \
     ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/kernda -o -y /usr/local/share/jupyter/kernels/${CONDA_ENV_MODIN}/kernel.json && \
@@ -145,7 +145,7 @@ RUN conda clean -y --all
 
 USER 1001
 
-ENV JUPYTER_PRELOAD_REPOS='https://github.com/IntelAI/models.git@master,https://github.com/IntelAI/oneAPI-samples.git@redhat-odh'
+ENV JUPYTER_PRELOAD_REPOS='https://github.com/IntelAI/models.git@master,https://github.com/IntelAI/oneAPI-samples.git@redhat-odh-dev'
 
 ENV JUPYTER_NOTEBOOK_INTERFACE=lab
 
