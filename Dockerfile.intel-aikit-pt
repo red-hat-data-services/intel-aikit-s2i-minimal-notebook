@@ -101,7 +101,7 @@ RUN curl https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x
     rm ./Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh
 
 RUN \
-    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} python=3.7 ${CONDA_ENV_PT} -c intel && \
+    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} python=3.7 intel-aikit-pytorch -c intel && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} ipython ipykernel kernda -c conda-forge && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} matplotlib && \
     chown -R 1001:0 ${APP_ROOT} && \

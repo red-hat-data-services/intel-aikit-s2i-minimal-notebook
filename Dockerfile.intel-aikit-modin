@@ -107,7 +107,7 @@ RUN curl https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x
     rm ./Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh
 
 RUN \
-    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN} --override-channels -c intel -c conda-forge ${CONDA_ENV_MODIN} omniscidbe4py python=3.7 && \
+    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN} --override-channels -c intel -c conda-forge intel-aikit-modin omniscidbe4py python=3.7 && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN} ipython ipykernel kernda -c conda-forge && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN} matplotlib -c conda-forge && \
     chown -R 1001:0 ${APP_ROOT} && \
