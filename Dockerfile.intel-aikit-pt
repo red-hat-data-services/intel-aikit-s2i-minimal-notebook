@@ -23,7 +23,7 @@ ENV PYTHON_VERSION=3.7 \
     PIP_NO_CACHE_DIR=off \
     APP_ROOT=/opt/app-root \
     CONDA_ROOT=${APP_ROOT}/miniconda3 \
-    CONDA_ENV_PT=intel-aikit-pytorch \
+    CONDA_ENV_PT=oneAPI-AIKit-DLPackage-with-PyTorch \
     PATH=${APP_ROOT}/miniconda3/bin:${PATH}
 
 # Intel Optimizations specific Envs
@@ -46,12 +46,12 @@ ENV KMP_AFFINITY='granularity=fine,verbose,compact,1,0' \
 #     PROMPT_COMMAND=". ${CONDA_ROOT}/bin/activate ${CONDA_ENV_PT}"
 
 ### Required OpenShift Labels
-LABEL name="Intel\u00ae AiKit PyTorch*" \
+LABEL name="Intel\u00ae oneAPI Toolkit - PyTorch*" \
       maintainer="abolfazl.shahbazi@intel.com" \
       vendor="Intel Corporation" \
       version="v2021.2" \
       release="2021.2" \
-      summary="Intel\u00ae PyTorch* and oneDNN on AiKit" \
+      summary="This Intel oneAPI Toolkit Container provides a comprehensive set of interoperable AI software tools that help to accelerate end to end data science and Machine learning pipelines on Intel architectures with familiar Python libraries and frameworks." \
       description="AiKit PyTorch* and Intel\u00ae oneAPI Deep Neural Network Library (oneDNN) optimized container for Intel\u00ae Xeon\u00ae processors." \
       io.k8s.display-name="Anaconda Python 3.7" \
       io.openshift.expose-services="8080:http" \
@@ -101,7 +101,7 @@ RUN curl https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x
     rm ./Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh
 
 RUN \
-    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} python=3.7 ${CONDA_ENV_PT} -c intel && \
+    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} python=3.7 intel-aikit-pytorch -c intel && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} ipython ipykernel kernda -c conda-forge && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} matplotlib && \
     chown -R 1001:0 ${APP_ROOT} && \
@@ -122,10 +122,10 @@ RUN /tmp/scripts/assemble
 
 RUN conda config --set auto_activate_base false
 
-ARG KERNEL_NAME_PT="Intel AiKit PyTorch"
+ARG KERNEL_NAME_PT="oneAPI AIKit DLPackage with PyTorch"
 RUN \
     ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/python -m ipykernel install --name ${CONDA_ENV_PT} --display-name "${KERNEL_NAME_PT}" && \
-    ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/kernda -o -y /usr/local/share/jupyter/kernels/${CONDA_ENV_PT}/kernel.json
+    ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/kernda -o -y /usr/local/share/jupyter/kernels/$(echo ${CONDA_ENV_PT} | sed -e 's/\(.*\)/\L\1/')/kernel.json
 
 RUN conda clean -y --all
 
