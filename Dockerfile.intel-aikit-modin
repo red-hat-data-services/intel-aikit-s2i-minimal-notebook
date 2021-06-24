@@ -131,7 +131,7 @@ RUN conda config --set auto_activate_base false
 ARG KERNEL_NAME_MODIN="oneAPI AIKit MLPackage"
 RUN \
     ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/python -m ipykernel install --name ${CONDA_ENV_MODIN} --display-name "${KERNEL_NAME_MODIN}" && \
-    ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/kernda -o -y /usr/local/share/jupyter/kernels/${CONDA_ENV_MODIN}/kernel.json
+    ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/kernda -o -y /usr/local/share/jupyter/kernels/$(echo ${CONDA_ENV_MODIN} | sed -e 's/\(.*\)/\L\1/')/kernel.json
 
 RUN conda clean -y --all
 

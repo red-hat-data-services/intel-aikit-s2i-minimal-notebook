@@ -125,7 +125,7 @@ RUN conda config --set auto_activate_base false
 ARG KERNEL_NAME_PT="oneAPI AIKit DLPackage with PyTorch"
 RUN \
     ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/python -m ipykernel install --name ${CONDA_ENV_PT} --display-name "${KERNEL_NAME_PT}" && \
-    ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/kernda -o -y /usr/local/share/jupyter/kernels/${CONDA_ENV_PT}/kernel.json
+    ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/kernda -o -y /usr/local/share/jupyter/kernels/$(echo ${CONDA_ENV_PT} | sed -e 's/\(.*\)/\L\1/')/kernel.json
 
 RUN conda clean -y --all
 
