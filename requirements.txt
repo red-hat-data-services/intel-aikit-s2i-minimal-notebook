@@ -5,3 +5,4 @@ jupyter_kernel_gateway>=2.4.0
 dask>=2.8.1
 distributed>=2.8.1
 tornado>=6.0.3
+nodejs>=12
