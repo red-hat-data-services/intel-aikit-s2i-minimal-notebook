@@ -141,6 +141,4 @@ ENV JUPYTER_PRELOAD_REPOS='https://github.com/IntelAI/models.git@master,https://
 
 ENV JUPYTER_NOTEBOOK_INTERFACE=lab
 
-RUN mv /tmp/src/*.ipynb ${APP_ROOT}/src/
-
 CMD [ "/opt/app-root/builder/run" ]
