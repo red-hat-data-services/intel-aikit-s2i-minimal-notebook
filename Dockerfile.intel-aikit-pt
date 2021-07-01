@@ -122,7 +122,7 @@ RUN /tmp/scripts/assemble
 
 RUN conda config --set auto_activate_base false
 
-ARG KERNEL_NAME_PT="Intel-Opt PyTorch & Quantization"
+ARG KERNEL_NAME_PT="Intel PyTorch & Quantization"
 RUN \
     ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/python -m ipykernel install --name ${CONDA_ENV_PT} --display-name "${KERNEL_NAME_PT}" && \
     ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/kernda -o -y /usr/local/share/jupyter/kernels/$(echo ${CONDA_ENV_PT} | sed -e 's/\(.*\)/\L\1/')/kernel.json

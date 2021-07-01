@@ -57,6 +57,9 @@ if [ -n "${JUPYTER_PRELOAD_REPOS}" ]; then
     done
 fi
 
+# Add the AiKit welcome notebook to the main page
+mv /tmp/src/*.ipynb ${APP_ROOT}/src/
+
 # Start the Jupyter notebook instance. Run using supervisord if enabled,
 # or it is required by webdav access.
 
