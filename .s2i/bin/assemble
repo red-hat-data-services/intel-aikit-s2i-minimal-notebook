@@ -133,7 +133,7 @@ conda install -y -c conda-forge jupyter_nbextensions_configurator
 
 jupyter nbextensions_configurator enable --sys-prefix
 
-jupyter lab build
+jupyter lab build --dev-build=False --minimize=False
 
 # Apply custom notebook configuration
 
@@ -156,5 +156,7 @@ fi
 
 # Make sure the S2I source directory is empty as we will use the image
 # produced to run further S2I builds.
+
+conda install -c conda-forge jupyterlab-git==0.30
 
 (shopt -s dotglob ; rm -rf ${APP_ROOT}/src/*)

@@ -6,4 +6,3 @@ dask>=2.8.1
 distributed>=2.8.1
 tornado>=6.0.3
 nodejs>=12
-jupyterlab-git==0.30
