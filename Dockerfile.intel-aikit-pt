@@ -104,6 +104,7 @@ RUN \
     conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} python=3.7 intel-aikit-pytorch -c intel && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} ipython ipykernel kernda -c conda-forge && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} matplotlib && \
+    conda clean -y --all && \
     chown -R 1001:0 ${APP_ROOT} && \
     fix-permissions ${APP_ROOT} -P && \
     fix-permissions ${CONDA_ROOT} -P && \
@@ -118,16 +119,16 @@ RUN rm -rf /tmp/src/.git* && \
     rm -rf /tmp/scripts && \
     mv /tmp/src/.s2i/bin /tmp/scripts
 
-RUN /tmp/scripts/assemble
+RUN /tmp/scripts/assemble && \
+    conda clean -y --all
 
 RUN conda config --set auto_activate_base false
 
 ARG KERNEL_NAME_PT="Intel PyTorch & Quantization"
 RUN \
     ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/python -m ipykernel install --name ${CONDA_ENV_PT} --display-name "${KERNEL_NAME_PT}" && \
-    ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/kernda -o -y /usr/local/share/jupyter/kernels/$(echo ${CONDA_ENV_PT} | sed -e 's/\(.*\)/\L\1/')/kernel.json
-
-RUN conda clean -y --all
+    ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/kernda -o -y /usr/local/share/jupyter/kernels/$(echo ${CONDA_ENV_PT} | sed -e 's/\(.*\)/\L\1/')/kernel.json && \
+    conda clean -y --all
 
 USER 1001
 
