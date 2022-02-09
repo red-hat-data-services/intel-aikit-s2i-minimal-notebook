@@ -1,4 +1,4 @@
-# This image provides a Python 3.7 environment you can use to run your Python
+# This image provides a Python 3.9 environment you can use to run your Python
 # applications.
 
 ARG IMAGE_NAME=registry.access.redhat.com/ubi8/s2i-base
@@ -14,8 +14,10 @@ EXPOSE 8080
 COPY licenses /licenses
 
 # TODO(Spryor): ensure these are right, add Anaconda versions
-ENV PYTHON_VERSION=3.7 \
-    PATH=$HOME/.local/bin/:$PATH \
+ENV CONDA_ENV_TF=oneAPI-AIKit-DLPackage-with-TF
+
+ENV PYTHON_VERSION=3.9 \
+    PATH=${HOME}/.local/bin:${PATH} \
     PYTHONUNBUFFERED=1 \
     PYTHONIOENCODING=UTF-8 \
     LC_ALL=en_US.UTF-8 \
@@ -23,8 +25,8 @@ ENV PYTHON_VERSION=3.7 \
     PIP_NO_CACHE_DIR=off \
     APP_ROOT=/opt/app-root \
     CONDA_ROOT=${APP_ROOT}/miniconda3 \
-    CONDA_ENV_TF=oneAPI-AIKit-DLPackage-with-TF \
-    PATH=${APP_ROOT}/miniconda3/bin:${PATH}
+    PATH=${APP_ROOT}/miniconda3/bin:${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/libfabric:${PATH} \
+    LD_LIBRARY_PATH=/opt/app-root/miniconda3/envs/${CONDA_ENV_TF}/lib/libfabric:${LD_LIBRARY_PATH}
 
 # Intel Optimizations specific Envs
 ENV KMP_AFFINITY='granularity=fine,verbose,compact,1,0' \
@@ -49,14 +51,14 @@ ENV KMP_AFFINITY='granularity=fine,verbose,compact,1,0' \
 LABEL name="Intel\u00ae oneAPI Toolkit - TensorFlow*" \
       maintainer="abolfazl.shahbazi@intel.com" \
       vendor="Intel Corporation" \
-      version="v2021.2" \
-      release="2021.2" \
+      version="v2022.1" \
+      release="2022.1" \
       summary="Intel\u00ae TensorFlow* and oneDNN on AiKit" \
       description="This Intel oneAPI Toolkit Container provides a comprehensive set of interoperable AI software tools that help to accelerate end to end data science and Machine learning pipelines on Intel architectures with familiar Python libraries and frameworks." \
-      io.k8s.display-name="Anaconda Python 3.7" \
+      io.k8s.display-name="Anaconda Python 3.9" \
       io.openshift.expose-services="8080:http" \
-      io.openshift.tags="builder,python,python37,python-37,miniconda3,AiKit" \
-      com.redhat.component="python-37-container" \
+      io.openshift.tags="builder,python,python39,python-39,miniconda3,AiKit" \
+      com.redhat.component="python-39-container" \
       usage=""
 
 RUN yum -y update-minimal --security --sec-severity=Important --sec-severity=Critical
@@ -94,14 +96,14 @@ RUN yum -y module enable httpd:2.4 && \
 #   writable as OpenShift default security model is to run the container
 #   under random UID.
 
-ARG CONDA_VERSION=py37_4.9.2
+ARG CONDA_VERSION=py39_4.10.3
 RUN curl https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh > Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
     chmod +x Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
     ./Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -b -p ${CONDA_ROOT} && \
     rm ./Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh
 
 RUN \
-    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} python=3.7 intel-aikit-tensorflow -c intel && \
+    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} python=${PYTHON_VERSION} intel-aikit-tensorflow python-flatbuffers -c intel && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} ipython ipykernel kernda -c conda-forge && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} matplotlib && \
     conda clean -y --all && \

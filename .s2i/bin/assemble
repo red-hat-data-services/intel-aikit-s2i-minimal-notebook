@@ -146,13 +146,13 @@ if [ -d "${APP_ROOT}/src/.jupyter/" ]; then
 fi
 
 # fix 'impi_rt' symlinks
-if [ -d "${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/libfabric" ]; then
-  ln -sf ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/libfabric/fi_* ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/
-elif [ -d "${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/libfabric" ]; then
-  ln -sf ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/libfabric/fi_* ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/
-elif [ -d "${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/libfabric" ]; then
-  ln -sf ${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/libfabric/fi_* ${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/
-fi
+# if [ -d "${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/libfabric" ]; then
+#   ln -sf ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/libfabric/fi_* ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/
+# elif [ -d "${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/libfabric" ]; then
+#   ln -sf ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/libfabric/fi_* ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/
+# elif [ -d "${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/libfabric" ]; then
+#   ln -sf ${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/libfabric/fi_* ${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/
+# fi
 
 # Make sure the S2I source directory is empty as we will use the image
 # produced to run further S2I builds.
