@@ -17,6 +17,8 @@ COPY licenses /licenses
 ENV CONDA_ENV_MODIN=oneAPI-AIKit-MLPackage
 ENV CONDA_ENV_PT=oneAPI-AIKit-DLPackage-with-PyTorch
 ENV CONDA_ENV_TF=oneAPI-AIKit-DLPackage-with-TF
+ENV APP_ROOT=/opt/app-root
+ENV CONDA_ROOT=${APP_ROOT}/miniconda3
 
 ENV PYTHON_VERSION=3.9 \
     PATH=${HOME}/.local/bin:${PATH} \
@@ -25,10 +27,8 @@ ENV PYTHON_VERSION=3.9 \
     LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     PIP_NO_CACHE_DIR=off \
-    APP_ROOT=/opt/app-root \
-    CONDA_ROOT=${APP_ROOT}/miniconda3 \
-    PATH=${APP_ROOT}/miniconda3/bin:${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/libfabric:${PATH} \
-    LD_LIBRARY_PATH=/opt/app-root/miniconda3/envs/${CONDA_ENV_TF}/lib/libfabric:${LD_LIBRARY_PATH}
+    PATH=${CONDA_ROOT}/bin:${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/libfabric:${PATH} \
+    LD_LIBRARY_PATH=${CONDA_ROOT}/envs/${CONDA_ENV_TF}/lib/libfabric:${LD_LIBRARY_PATH}
 
 # Intel Optimizations specific Envs
 ENV KMP_AFFINITY='granularity=fine,verbose,compact,1,0' \
