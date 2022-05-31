@@ -1,4 +1,4 @@
-# This image provides a Python 3.7 environment you can use to run your Python
+# This image provides a Python 3.9 environment you can use to run your Python
 # applications.
 
 ARG IMAGE_NAME=registry.access.redhat.com/ubi8/s2i-core
@@ -11,7 +11,7 @@ USER root
 EXPOSE 8080
 
 # TODO(Spryor): ensure these are right, add Anaconda versions
-ENV PYTHON_VERSION=3.7 \
+ENV PYTHON_VERSION=3.9 \
     PATH=$HOME/.local/bin/:$PATH \
     PYTHONUNBUFFERED=1 \
     PYTHONIOENCODING=UTF-8 \
@@ -46,10 +46,10 @@ ENV SUMMARY="" \
 LABEL summary="$SUMMARY" \
       description="$DESCRIPTION" \
       io.k8s.description="$DESCRIPTION" \
-      io.k8s.display-name="Anaconda Python 3.7" \
+      io.k8s.display-name="Anaconda Python 3.9" \
       io.openshift.expose-services="8080:http" \
-      io.openshift.tags="builder,python,python37,python-37,miniconda3" \
-      com.redhat.component="python-37-container" \
+      io.openshift.tags="builder,python,python39,python-39,miniconda3" \
+      com.redhat.component="python-39-container" \
       name="ubi8/miniconda3" \
       version="1" \
       usage="" \
@@ -88,7 +88,7 @@ RUN yum -y module enable httpd:2.4 && \
 #   writable as OpenShift default security model is to run the container
 #   under random UID.
 
-ARG CONDA_VERSION=py37_4.9.2
+ARG CONDA_VERSION=py39_4.10.3
 RUN curl https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh > Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
     chmod +x Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh && \
     ./Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -b -p ${CONDA_ROOT} && \
