@@ -53,8 +53,8 @@ ENV KMP_AFFINITY='granularity=fine,verbose,compact,1,0' \
 LABEL name="Intel\u00ae oneAPI Toolkit" \
       maintainer="abolfazl.shahbazi@intel.com" \
       vendor="Intel Corporation" \
-      version="v2022.1" \
-      release="2022.1" \
+      version="v2022.3" \
+      release="2022.3" \
       summary="This Intel oneAPI Toolkit Container provides a comprehensive set of interoperable AI software tools that help to accelerate end to end data science and Machine learning pipelines on Intel architectures with familiar Python libraries and frameworks." \
       description="Intel\u00ae oneAPI Deep Neural Network Library (oneDNN) Analytics Kit optimized container for Intel\u00ae Xeon\u00ae processors." \
       io.k8s.display-name="Anaconda Python 3.9" \
@@ -108,10 +108,10 @@ RUN \
     conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN} python=3.7 intel-aikit-modin -c intel && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN} ipython ipykernel kernda -c conda-forge && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN} matplotlib -c conda-forge && \
-    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} python=${PYTHON_VERSION} intel-aikit-pytorch -c intel && \
+    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} python=${PYTHON_VERSION} intel-aikit-pytorch -c "intel/label/validation" && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} ipython ipykernel kernda -c conda-forge && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} matplotlib && \
-    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} python=${PYTHON_VERSION} intel-aikit-tensorflow python-flatbuffers -c intel && \
+    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} python=${PYTHON_VERSION} intel-aikit-tensorflow -c "intel/label/validation" && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} ipython ipykernel kernda -c conda-forge && \
     conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} matplotlib && \
     conda clean -y --all && \

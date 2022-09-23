@@ -51,8 +51,8 @@ ENV KMP_AFFINITY='granularity=fine,verbose,compact,1,0' \
 LABEL name="Intel\u00ae oneAPI Toolkit - Modin" \
       maintainer="abolfazl.shahbazi@intel.com" \
       vendor="Intel Corporation" \
-      version="v2022.1" \
-      release="2022.1" \
+      version="v2022.3" \
+      release="2022.3" \
       summary="This Intel oneAPI Toolkit Container provides a comprehensive set of interoperable AI software tools that help to accelerate end to end data science and Machine learning pipelines on Intel architectures with familiar Python libraries and frameworks." \
       description="AiKit Modin and Intel\u00ae oneAPI Deep Neural Network Library (oneDNN) optimized container for Intel\u00ae Xeon\u00ae processors." \
       io.k8s.display-name="Anaconda Python 3.7" \
