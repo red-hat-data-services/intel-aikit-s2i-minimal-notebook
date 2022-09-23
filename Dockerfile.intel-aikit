@@ -106,14 +106,11 @@ RUN curl https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x
 
 RUN \
     conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN} python=3.7 intel-aikit-modin -c intel && \
-    conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN} ipython ipykernel kernda -c conda-forge && \
-    conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN} matplotlib -c conda-forge && \
-    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} python=${PYTHON_VERSION} intel-aikit-pytorch -c "intel/label/validation" && \
-    conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} ipython ipykernel kernda -c conda-forge && \
-    conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} matplotlib && \
-    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} python=${PYTHON_VERSION} intel-aikit-tensorflow -c "intel/label/validation" && \
-    conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} ipython ipykernel kernda -c conda-forge && \
-    conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} matplotlib && \
+    conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN} ipython ipykernel kernda matplotlib -c conda-forge && \
+    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} python=${PYTHON_VERSION} intel-aikit-pytorch -c "intel/label/validation" -c intel -c main --override-channels && \
+    conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_PT} ipython ipykernel kernda matplotlib -c conda-forge && \
+    conda create --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} python=${PYTHON_VERSION} intel-aikit-tensorflow -c "intel/label/validation" -c intel -c main --override-channels && \
+    conda install --yes -p ${CONDA_ROOT}/envs/${CONDA_ENV_TF} ipython ipykernel kernda matplotlib -c conda-forge && \
     conda clean -y --all && \
     chown -R 1001:0 ${APP_ROOT} && \
     fix-permissions ${APP_ROOT} -P && \
@@ -142,6 +139,7 @@ RUN \
     ${CONDA_ROOT}/envs/${CONDA_ENV_MODIN}/bin/kernda -o -y /usr/local/share/jupyter/kernels/$(echo ${CONDA_ENV_MODIN} | sed -e 's/\(.*\)/\L\1/')/kernel.json && \
     ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/python -m ipykernel install --name ${CONDA_ENV_PT} --display-name "${KERNEL_NAME_PT}" && \
     ${CONDA_ROOT}/envs/${CONDA_ENV_PT}/bin/kernda -o -y /usr/local/share/jupyter/kernels/$(echo ${CONDA_ENV_PT} | sed -e 's/\(.*\)/\L\1/')/kernel.json && \
+    LD_LIBRARY_PATH=/opt/app-root/miniconda3/lib:${LD_LIBRARY_PATH} && \
     ${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/python -m ipykernel install --name ${CONDA_ENV_TF} --display-name "${KERNEL_NAME_TF}" && \
     ${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/kernda -o -y /usr/local/share/jupyter/kernels/$(echo ${CONDA_ENV_TF} | sed -e 's/\(.*\)/\L\1/')/kernel.json && \
     conda clean -y --all
