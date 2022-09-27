@@ -126,8 +126,8 @@ RUN /tmp/scripts/assemble && \
 RUN conda config --set auto_activate_base false
 
 ARG KERNEL_NAME_TF="Intel TensorFlow & Quantization"
+ENV LD_LIBRARY_PATH=/opt/app-root/miniconda3/lib:${LD_LIBRARY_PATH}
 RUN \
-    LD_LIBRARY_PATH=/opt/app-root/miniconda3/lib:${LD_LIBRARY_PATH} && \
     ${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/python -m ipykernel install --name ${CONDA_ENV_TF} --display-name "${KERNEL_NAME_TF}" && \
     ${CONDA_ROOT}/envs/${CONDA_ENV_TF}/bin/kernda -o -y /usr/local/share/jupyter/kernels/$(echo ${CONDA_ENV_TF} | sed -e 's/\(.*\)/\L\1/')/kernel.json && \
     conda clean -y --all
