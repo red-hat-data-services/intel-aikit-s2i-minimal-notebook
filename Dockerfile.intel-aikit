@@ -49,7 +49,7 @@ ENV KMP_AFFINITY='granularity=fine,verbose,compact,1,0' \
 
 ### Required OpenShift Labels
 LABEL name="Intel\u00ae oneAPI Toolkit" \
-      maintainer="abolfazl.shahbazi@intel.com;shahsharvil96@gmail.com" \
+      maintainer="abolfazl.shahbazi@intel.com;sharvil.shah@intel.com" \
       vendor="Intel Corporation" \
       version="v2023.0" \
       release="2023.0" \
