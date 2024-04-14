@@ -253,7 +253,7 @@ greenlet==1.0.0; python_version >= '3' \
     --hash=sha256:f6f65bf54215e4ebf6b01e4bb94c49180a589573df643735107056f7a910275b \
     --hash=sha256:f8450d5ef759dbe59f84f2c9f77491bb3d3c44bc1a573746daf086e70b14c243 \
     --hash=sha256:f97d83049715fd9dec7911860ecf0e17b48d8725de01e45de07d8ac0bd5bc378
-idna==2.10; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3' \
+idna==3.7; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3' \
     --hash=sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6 \
     --hash=sha256:b97d804b1e9b523befed77c48dacec60e6dcb0b5391d57af6a65a312a90648c0
 invectio==0.1.0 \
